@@ -11,10 +11,17 @@ per cancer type.
 **`alt_splice/outliers`**  
 Code for detection and visualization of splicing outliers.
 
-**`neoepitopes`**
+**`neoepitopes`**  
 Contains code for the visualization of results on the prediction of neo-epitopes.
 
-**`sample_processing_rna`**
+**`sample_processing_rna`**  
 Code for pre-processing and alignment of the RNA-Seq data, including expression counting, the
 collection of usage statistics, and construction of splicing graphs.
+
+**`sqtl`**  
+Visualization scripts for the sQTL analyses.
+
+**`tSNE_and_heatmap_visualizations`**  
+Code for tSNE embeddings on alternative splicing and expression data as well as scripts 
+for visualization and different highlightings.
 
