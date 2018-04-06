@@ -12,8 +12,7 @@ else:
     import names
     from IPython.display import display
 
-#BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-BASEDIR = '/cluster/home/akahles/git/projects/2013/PanCancerTCGA/rerun2015/starks/'
+BASEDIR = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 sys.path.append(BASEDIR)
 import compute.alt_splice as preproc
 import plot.alt_splice_heatmap as plotter
@@ -71,13 +70,6 @@ def test_load_data(path, sf_interest):
     mask = np.zeors(gene_idx.size, dtype=bool); mask[mask_idx] = True
     return data, mask
 
-#    strains = data['strains'][:]
-#    psi = data['psi'][:, event_mask]
-#    print "\t psi.ngbytes = %.1f" %(psi.nbytes * 1e-9)
-#    data.close()
-#    psi, strains, gene_idx = preproc(psi, strains, gene_idx, conf_idx)
-#    return psi, strains, gene_idx
-
 def _load_single_hdf5(path, ensg_interest):
     '''Returns the dataframe and idx of columns kept
     '''
@@ -94,8 +86,6 @@ def _load_single_hdf5(path, ensg_interest):
     return df, col_idx
 
 def load_data_no_impute_event(etype, event_id, map_event_to_file): # , sf_interest):
-    #map_ensg_to_gene = {val: key for (key, val) in sf_interest.items()}
-    #ensg_interest = set(sf_interest.values())
     df_list = list()
     path = map_event_to_file[etype]
 
@@ -104,16 +94,7 @@ def load_data_no_impute_event(etype, event_id, map_event_to_file): # , sf_intere
     ensg_idx = data['gene_names'][gene_idx]
     lookup = names.get_lookup_complete()
     ensg_name = names.get_ID(ensg_idx, lookup=lookup)
-        #gene_idx = data['gene_idx'][:].astype(int)
-        #ensg_ids = np.vectorize(lambda x: x.split('.')[0])(data['gene_names'][:])
-        #ensg_idx = ensg_ids[gene_idx]
-        #conf_idx = data['conf_idx'][:]
-        #interest_idx = np.array([x for x in conf_idx if ensg_idx[x] in ensg_interest])
-        #mask = np.zeros(gene_idx.size, dtype=bool); mask[interest_idx] = True
-        #assert data['psi'].shape[1] == mask.size
-        #psi = data['psi'][:, mask]
     psi = data['psi'][:, event_id]
-        #columns = [_encode_event_name(map_ensg_to_gene[ensg_idx[x]], etype, x) for x in interest_idx]
     columns = [_encode_event_name(re.sub(r'-', '_', ensg_name), etype, event_id)]
     strains = sf_utils.clean_strain(data['strains'][:])
     df_list.append(pd.DataFrame(psi, index=strains, columns=columns))
@@ -149,9 +130,6 @@ def _decode_event_name(name):
     return gname, etype, int(col_idx)
 
 def load_data(sf_interest, is_event=False):
-#    gtex_cache_path = os.path.join(CACHE_DIR, 'noimpute_altsplice_interest_sf_gtex.tsv')
-#    panc_cache_path = os.path.join(CACHE_DIR, 'noimpute_altsplice_interest_sf.tsv')
-#    name_cache_path = os.path.join(CACHE_DIR, 'noimpute_altsplice_interest_sf.names')
 
     panc_map_event_to_file = {'exon_skip': config.alt_splice_exon_skip_path,
                              'intron_retention': config.alt_splice_intron_retention_path,
@@ -201,9 +179,6 @@ def load_gtex_data(sf_interest):
             df, col_idx= _load_single_hdf5(path, ensg_interest)
             df.columns = map(lambda x: etype + '.' + x, df.columns)
             df_dict[etype] = (df, col_idx)
-#        df = pd.concat(df_list, axis=1).dropna()
-#        df.to_csv(cache_path, sep='\t')
-#        _cache_sf_interest_names(sf_names, cache_sf_interest_path)
     return df_dict
 
 def load_panc_data(sf_interest):
@@ -230,9 +205,6 @@ def load_panc_data(sf_interest):
             df, col_idx = _load_single_hdf5(path, ensg_interest)
             df.columns = map(lambda x: etype + '.' + x, df.columns)
             df_dict[etype] = (df, col_idx)
-        #df = pd.concat(df_list, axis=1).dropna()
-        #df.to_csv(cache_path, sep='\t')
-        #_cache_sf_interest_names(sf_names, cache_sf_interest_path)
     return df_dict
 
 def filter_psi(df, min_mean, max_mean):
@@ -445,8 +417,6 @@ if __name__ == '__main__':
 
         ### load actual data
         panc_df, gtex_df = load_data(sf_interest)
-        #sys.exit()
-    #    panc_df, gtex_df = filter_both_psi(panc_df, gtex_df)
 
         ### load metadata
         panc_md = utils.load_metadata_df(config.metadata_path, panc_df.index).dropna()
@@ -456,5 +426,3 @@ if __name__ == '__main__':
         assert gtex_df.index.equals(gtex_md.index)
 
         run_gene_heatmaps(panc_df, panc_md, sf_interest)
-    #    run_strip_plot(panc_df, gtex_df, panc_md_wnorm['cnc'], gtex_md['histological_type_s'])
-

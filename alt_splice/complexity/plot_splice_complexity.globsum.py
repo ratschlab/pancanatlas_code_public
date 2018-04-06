@@ -65,25 +65,25 @@ lookup = names.get_lookup_complete()
 (ct_dict, is_tumor_dict) = utils.get_ct_dict_metatable(paths.metadata, style='pancan_rerun18')
 
 ### create GTex type dictionary
-sample_dict = {'ADIP':'sample_lists_gtex/Adipose.txt',
-               'BLDR':'sample_lists_gtex/Bladder.txt',
-               'BRAI':'sample_lists_gtex/Brain.txt',
-               'BRST':'sample_lists_gtex/Breast.txt',
-               'CERV':'sample_lists_gtex/Cervix.txt',
-               'COLN':'sample_lists_gtex/Colon.txt',
-               'ESPH':'sample_lists_gtex/Esophagus.txt',
-               'KIDN':'sample_lists_gtex/Kidney.txt',
-               'LIVR':'sample_lists_gtex/Liver.txt',
-               'LUNG':'sample_lists_gtex/Lung.txt',
-               'OVRY':'sample_lists_gtex/Ovary.txt',
-               'PANC':'sample_lists_gtex/Pancreas.txt',
-               'PRST':'sample_lists_gtex/Prostate.txt',
-               'SKIN':'sample_lists_gtex/Skin.txt',
-               'STOM':'sample_lists_gtex/Stomach.txt',
-               'THYR':'sample_lists_gtex/Thyroid.txt',
-               'TSTS':'sample_lists_gtex/Testis.txt',
-               'UTER':'sample_lists_gtex/Uterus.txt',
-               'CELL':'sample_lists_gtex/Cells.txt'}
+sample_dict = {'ADIP':'../annotation/sample_lists_gtex/Adipose.txt',
+               'BLDR':'../annotation/sample_lists_gtex/Bladder.txt',
+               'BRAI':'../annotation/sample_lists_gtex/Brain.txt',
+               'BRST':'../annotation/sample_lists_gtex/Breast.txt',
+               'CERV':'../annotation/sample_lists_gtex/Cervix.txt',
+               'COLN':'../annotation/sample_lists_gtex/Colon.txt',
+               'ESPH':'../annotation/sample_lists_gtex/Esophagus.txt',
+               'KIDN':'../annotation/sample_lists_gtex/Kidney.txt',
+               'LIVR':'../annotation/sample_lists_gtex/Liver.txt',
+               'LUNG':'../annotation/sample_lists_gtex/Lung.txt',
+               'OVRY':'../annotation/sample_lists_gtex/Ovary.txt',
+               'PANC':'../annotation/sample_lists_gtex/Pancreas.txt',
+               'PRST':'../annotation/sample_lists_gtex/Prostate.txt',
+               'SKIN':'../annotation/sample_lists_gtex/Skin.txt',
+               'STOM':'../annotation/sample_lists_gtex/Stomach.txt',
+               'THYR':'../annotation/sample_lists_gtex/Thyroid.txt',
+               'TSTS':'../annotation/sample_lists_gtex/Testis.txt',
+               'UTER':'../annotation/sample_lists_gtex/Uterus.txt',
+               'CELL':'../annotation/sample_lists_gtex/Cells.txt'}
 gt_dict = utils.get_gt_dict(sample_dict)
 
 ### how shall we map the samples onto each other?
