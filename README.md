@@ -14,7 +14,7 @@ Code concerning the detection and analysis of alternative splicing events.
     Code for visualising the event type distributions and number of alternative splicing events detected
     per cancer type.
 
-    * **`filtering`**
+    * **`filtering`** 
     Code implementing various filters on the AS events, based on read coverage, min delta PSI, etc.
     
     * **`complexity`** 
