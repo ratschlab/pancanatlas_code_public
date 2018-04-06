@@ -4,17 +4,17 @@ the manuscript *Comprehensive Analysis of Alternative Splicing Across Tumors fro
 
 The code is organized in several sub-directories, which contain the following content:
 
-**`alt_splice`**
+* **`alt_splice`**
 Code concerning the detection and analysis of alternative splicing events.
 
-    **`alt_splice/event_stats`**  
+    * **`alt_splice/event_stats`**  
     Code for visualising the event type distributions and number of alternative splicing events detected
     per cancer type.
     
-    **`complexity`**
+    * **`complexity`**
     Detection of neo-junctions predominantly present in cancer samples but absent from annotation or the GTEx outgroup.
 
-    **`alt_splice/outliers`**  
+    * **`alt_splice/outliers`**  
     Code for detection and visualization of splicing outliers.
 
 **`neoepitopes`**  
