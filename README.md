@@ -26,6 +26,9 @@ Code concerning the detection and analysis of alternative splicing events.
     * **`tumor_vs_normal_stats`**  
     Assessment of events detected in tumor samples vs normal samples.
 
+    * **`tumor_vs_normal_test`**  
+    Differential testing of tumor vs normal samples on sets of subsamples per cancer type.
+
 * **`neoepitopes`**  
 Contains code for the visualization of results on the prediction of neo-epitopes.
 
