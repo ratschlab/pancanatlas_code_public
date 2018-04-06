@@ -23,6 +23,9 @@ Code concerning the detection and analysis of alternative splicing events.
     * **`splice_outliers`**  
     Code for detection and visualization of splicing outliers.
 
+    * **`tumor_vs_normal_rank`**  
+    Identification and ranking of tumor specific introns.
+
     * **`tumor_vs_normal_stats`**  
     Assessment of events detected in tumor samples vs normal samples.
 
