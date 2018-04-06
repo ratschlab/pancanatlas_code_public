@@ -13,6 +13,9 @@ Code concerning the detection and analysis of alternative splicing events.
     * **`event_stats`**  
     Code for visualising the event type distributions and number of alternative splicing events detected
     per cancer type.
+
+    * **`filtering`**
+    Code implementing various filters on the AS events, based on read coverage, min delta PSI, etc.
     
     * **`complexity`** 
     Detection of neo-junctions predominantly present in cancer samples but absent from annotation or the GTEx outgroup.
