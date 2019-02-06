@@ -5,11 +5,10 @@ set -e
 ### This script is the general processing wrapper for a single
 ### sample to be locall processed on a cluster node. The steps
 ### covered by this wrapper are:
-### - download
 ### - fastqc
 ### - alignment & stats
 ### - expression counting
-### - alternative splicing analysis
+### - alternative splicing analysis (stage 1)
 
 
 if [ -z "$2" ]
@@ -24,33 +23,26 @@ aid=$2
 ### PROLOGUE ###
 ################
 
-#slp=$(echo $RANDOM / 20 | bc)
-#echo "sleeping $slp seconds"
-#sleep $slp
-
-### software and fixed data paths
+### software and fixed data patps
 fastqc_script=${HOME}/git/projects/2013/PanCancerTCGA/rerun2017/sample_processing_rna/run_fastqc_one.sh
 stats_script=${HOME}/git/projects/2013/PanCancerTCGA/rerun2015/sample_processing_rna/collect_quick_align_stats.py
 count_script=${HOME}/git/projects/2013/PanCancerTCGA/count_expression/count_expression.py
 as_script=${HOME}/git/software/spladder_pancan_rerun2018/python/spladder.py
-samtools=/cluster/work/grlab/share/modules/packages/samtools/1.6/bin/samtools
-bam2fastq=/cluster/home/akahles/git/projects/2013/PanCancerTCGA/rerun2017/sample_processing_rna/bam2fastq.py
+bam2fastq=/${HOME}/git/projects/2013/PanCancerTCGA/rerun2017/sample_processing_rna/bam2fastq.py
 
+samtools=/cluster/work/grlab/share/modules/packages/samtools/2.6/bin/samtools
 stardir=/cluster/work/grlab/share/modules/packages/star/2.5.3a/bin
 genome=/cluster/work/grlab/projects/TCGA/PanCancer/genome/hg19_hs37d5_G19.overhang100_STAR_rr18
 genomeFasta=/cluster/work/grlab/projects/TCGA/PanCancer/genome/hg19_hs37d5/genome.fa
 annotation=/cluster/work/grlab/projects/TCGA/PanCancer/annotation/gencode.v19.annotation.hs37d5_chr.gtf
 annotation_spladder=/cluster/work/grlab/projects/TCGA/PanCancer/annotation/gencode.v19.annotation.hs37d5_chr.coding.spladder_rr18.gtf
 data_dir=/cluster/work/grlab/projects/TCGA/PanCancer/rerun2018_data
-#annotation=/cbio/grlab/projects/TCGA/PanCancer/annotation/debug.gtf
-#annotation_spladder=/cbio/grlab/projects/TCGA/PanCancer/annotation/debug.spladder.gtf
 
 threads=6
 result_dir=/cluster/work/grlab/projects/TCGA/PanCancer/rerun2018/${tid}.${aid}
 mkdir -p $result_dir
 touch ${result_dir}/running.lock
 
-#export PYTHONPATH=/cluster/akahles/lib/python/:$PYTHONPATH;
 export PATH=$stardir:$PATH
 
 ### create log dir
