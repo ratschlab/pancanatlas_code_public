@@ -125,7 +125,7 @@ This includes the following steps:
 
 ### Integration of alternative splicing events
 
-The script [alt_splice/events/run_alt_splice.sh](alt_splice/events/run_alt_splice.sh) takes care of
+The script [events/run_alt_splice.sh](alt_splice/events/run_alt_splice.sh) takes care of
 integrating the single splicing graphs generated during stage 1, to form a joint splicing graph per
 gene across all samples.
 
