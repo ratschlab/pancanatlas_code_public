@@ -15,11 +15,11 @@ This first stage has several components and is based on the following list of in
 * reference genome annotation in GTF format
 
 The code for all analysis steps of this first stage is located in
-[sample_processing_rna](sample_processing_rna). Specifically,
-[sample_processing_rna/process_samples.sh](sample_processing_rna/process_samples.sh) orchestrates
+[sample_processing_rna](../sample_processing_rna). Specifically,
+[sample_processing_rna/process_samples.sh](../sample_processing_rna/process_samples.sh) orchestrates
 the iteration over a list of samples, e.g. using HPC infrastructure (in our example with LSF as a
 batch system), by calling
-[sample_processing_rna/process_sample_one.sh](sample_processing_rna/process_sample_one.sh), that
+[sample_processing_rna/process_sample_one.sh](../sample_processing_rna/process_sample_one.sh), that
 provides the individual steps of the module:
 * preprocessing of input file
 * collection of QC statistics
@@ -39,7 +39,7 @@ First, the input BAM file is sorted by read ID and subsequently split into pairs
 is used, it is important that unaligned reads are part of the BAM file and both sequence and quality
 information are present. Sorting was done using `samtools`, while conversion into FASTQ was done
 using a custom python script
-[sample_processing_rna/bam2fastq.py](sample_processing_rna/bam2fastq.py). (Please note that a
+[sample_processing_rna/bam2fastq.py](../sample_processing_rna/bam2fastq.py). (Please note that a
 specific version for single-end reads exists. However, our analysis excludes single-end RNA-Seq
 files.)
 
@@ -47,19 +47,19 @@ files.)
 
 Quality measures if the FASTQ input are collected using the FastQC tool (version 0.11.6). Call and
 parameters are collected in the script
-[sample_processing_rna/run_fastqc_one.sh](sample_processing_rna/run_fastqc_one.sh). We generate one
+[sample_processing_rna/run_fastqc_one.sh](../sample_processing_rna/run_fastqc_one.sh). We generate one
 output file per input FASTQ and later aggregate the information for joint QC analysis.
 
 Later in the pipeline, right after the following alignment step, the number of aligned reads is
 counted (together with some statistics on the distribution of mismatches). For this step, the script
-[sample_processing_rna/collect_quick_align_stats.py](sample_processing_rna/collect_quick_align_stats.py)
+[sample_processing_rna/collect_quick_align_stats.py](../sample_processing_rna/collect_quick_align_stats.py)
 is used.
 
 ### Alignment
 
 For alignment, we use the STAR software with a set of parameters we had good experience with in our
 evaluations and practical applications over the past years. The full alignment call is present in
-[sample_processing_rna/process_sample_one.sh](sample_processing_rna/process_sample_one.sh) in the
+[sample_processing_rna/process_sample_one.sh](../sample_processing_rna/process_sample_one.sh) in the
 section ALIGNMENT. It is important for the further steps in our analysis, that the SAM attributes as
 specified in the call (NH HI NM MD AS XS) are set - they are needed by the downstream analysis
 steps. STAR is run in 2-pass mode. That is, in a first round of alignment novel junctions are
@@ -71,7 +71,7 @@ analysis.
 As a preliminary step to this alignment, the reference genome and the reference annotation need 
 to be integrated into a STAR index that is used for the alignment step above. All logic and
 parameters to create the alignment index are present in
-[sample_processing_rna/run_create_index.sh](sample_processing_rna/run_create_index.sh). The
+[sample_processing_rna/run_create_index.sh](../sample_processing_rna/run_create_index.sh). The
 directory containing the alignment index will is represented by `$genome` in
 `process_sample_one.sh`.
 
@@ -81,7 +81,7 @@ our compute servers. Lowering the number of parallel threads, will increase runn
 ### Gene expression quantification
 
 For gene expression counting, we use the custom script
-[count_expression/count_expression.py](count_expression/count_expression.py), which will count all
+[count_expression/count_expression.py](../count_expression/count_expression.py), which will count all
 non-secondary alignments that overlap to at least one annotated exon position. All positions in the
 annotation that are assigned to more than one gene model are masked out. Further, we create two
 version of the alignment counts. One with only overlapping gene positions masked and a second one
@@ -91,7 +91,7 @@ with also all positions masked that are annotated as both exon and intron in the
 
 For each sample, we generate a splicing graph using the SplAdder tool. This will be called in the
 SPLICING section
-[sample_processing_rna/process_sample_one.sh](sample_processing_rna/process_sample_one.sh). Based on
+[sample_processing_rna/process_sample_one.sh](../sample_processing_rna/process_sample_one.sh). Based on
 the alignment of the sample in BAM format as input, this script will generate an initial splicing
 graph for each gene in the annotation based on all annotated transcripts. Using the RNA-Seq evidence
 from the BAM file, each gene's splicing graph is then augmented with additional nodes and edges. 
