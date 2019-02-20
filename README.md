@@ -23,6 +23,9 @@ Code concerning the detection and analysis of alternative splicing events.
     * **`splice_outliers`**  
     Code for detection and visualization of splicing outliers.
 
+    * **`peptide_generation`**
+    Code concerned with generating peptides from splice-graphs.
+
     * **`tumor_vs_normal_rank`**  
     Identification and ranking of tumor specific introns.
 

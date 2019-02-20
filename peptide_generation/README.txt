@@ -7,7 +7,7 @@ The parallel rank RANK is a running integer in the interval [0,number of samples
 to the script, which enables easy parallel processing in a cluster environment. The run id
 ID_OF_THE_RUN defines the folder name of the output peptides. Use the command line
 flag '--batch_mode' to re-direct stdout/stderr to log files in a cluster environment.
-Use '--gtex_normals' to generate GTEX background output is. GRAPH_DATA and GRAPH_METADATA_PATH
+Use '--gtex_normals' to generate GTEX background outputs. GRAPH_DATA and GRAPH_METADATA_PATH
 then also need to be modified accordingly to pass the correct splice graphs for GTEX
 peptide generation mode.
 
