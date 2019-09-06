@@ -15,6 +15,7 @@ import pdb
 import h5py
 import os
 import re
+import gzip
 import cPickle
 
 sys.path.append('/cluster/home/akahles/git/projects/2013/PanCancerTCGA/rerun2017')
@@ -29,6 +30,9 @@ PLOTDIR = os.path.join(paths.plotdir, 'as_complexity')
 if not os.path.exists(PLOTDIR):
     os.makedirs(PLOTDIR)
 CONF = 2
+
+if not os.path.exists(paths.basedir_tss_fix):
+    os.makedirs(paths.basedir_tss_fix)
 
 fl_tag = ''
 filt_lib = True
@@ -206,6 +210,7 @@ else:
     (sf_gtex, sf_tcga) = cPickle.load(open(os.path.join(paths.basedir_tss, 'tss_size_factors%s%s.cpickle' % (wl_tag, fl_tag)), 'r'))
 
 compl_pickle = os.path.join(paths.basedir_tss, 'tss_complexity_counts%s.cpickle' % pickle_tag)
+compl_pickle_junc = os.path.join(paths.basedir_tss, 'tss_complexity_counts%s_junc.hdf5' % pickle_tag)
 if not os.path.exists(compl_pickle):
 
     ### remove edges that are confirmed with at least two reads in more than 5% of the GTEx sample
@@ -280,6 +285,8 @@ if not os.path.exists(compl_pickle):
     _, f_idx = sp.unique(gids_tcga[k_idx][s_idx], return_index=True)
     l_idx = sp.r_[f_idx[1:], k_idx.shape[0]]
 
+    junc_used = sp.zeros((k_idx.shape[0], lkidx.shape[0]), dtype='bool')
+
     ### get counts
     for i in xrange(f_idx.shape[0]):
         if (i + 1) % 20 == 0:
@@ -290,6 +297,7 @@ if not os.path.exists(compl_pickle):
         tmp = IN_TC['edges'][sorted(k_idx[s_idx[f_idx[i]:l_idx[i]]]), :][:, lkidx] * sf_tcga
         counts_tcga.append(sp.sum(tmp >= conf_count, axis=0))
         donor_support_tcga.extend(sp.sum(tmp >= conf_count, axis=1))
+        junc_used[s_idx[f_idx[i]:l_idx[i]], :] = (tmp >= conf_count)
 
     IN_GT.close()
     IN_TC.close()
@@ -299,9 +307,30 @@ if not os.path.exists(compl_pickle):
     donor_support_tcga = sp.array(donor_support_tcga, dtype='int')
 
     cPickle.dump((counts_tcga, counts_gtex, donor_support_tcga, k_idx), open(compl_pickle, 'w'), -1)
+    JU = h5py.File(compl_pickle_junc, 'w')
+    JU.create_dataset(name='junc_used', data=junc_used, compression='gzip')
+    JU.close()
 else:
     print 'loading counts from pickle'
     (counts_tcga, counts_gtex, donor_support_tcga, k_idx) = cPickle.load(open(compl_pickle, 'r'))
+    JU = h5py.File(compl_pickle_junc, 'r')
+    junc_used = JU['junc_used'][:]
+    JU.close()
+
+
+### write junctions to file
+INJT = h5py.File(os.path.join(paths.basedir_as, 'spladder', 'genes_graph_conf%i.merge_graphs.validated.junctions%s.hdf5' % (CONF, wl_tag)), 'r')
+jt_pos = INJT['pos'][:]
+jt_chrm = INJT['chrms'][:]
+jt_strand = INJT['strand'][:]
+INJT.close()
+junc_out = gzip.open(os.path.join(paths.basedir_tss, 'tss_complexity_counts%s_neojunctions.tsv.gz' % pickle_tag), 'w')
+for i in range(junc_used.shape[1]):
+    strain = re.sub(r'.aligned', '', strains_tcga[i])
+    iidx = sp.where(junc_used[:, i])[0]
+    for ii in iidx:
+        print >> junc_out,'\t'.join([strain, gid_names_tcga[k_idx[ii]], '%s:%s:%i-%i' % (jt_chrm[k_idx[ii]], jt_strand[k_idx[ii]], jt_pos[k_idx[ii], 0], jt_pos[k_idx[ii], 1])])
+junc_out.close()
 
 means_tcga = sp.mean(counts_tcga, axis=1)
 medians_tcga = sp.median(counts_tcga, axis=1)
@@ -361,6 +390,7 @@ data = sp.vstack([gnames_tmp, sp.array([names.get_ID(x.split('.')[0], lookup) fo
 sp.savetxt(open(os.path.join(paths.basedir_tss, 'splicing_complexity_by_gene%s.tsv' % pickle_tag), 'w'), data, fmt='%s', delimiter='\t') 
 
 
+#
 #
 # PLOTTING
 #
@@ -979,7 +1009,7 @@ xticks = []
 cumx = 0
 cnt_out_t = 0
 cnt_out_n = 0
-IQR_FACT = 1.5
+IQR_FACT = 2.0
 for j,t in enumerate(ctypes_un[ct_idx]):
     # plot TCGA 
     # tumor
