@@ -11,8 +11,8 @@ do
     echo "handling $et"
     if [ "$1" == "local" ]
     then
-        python $(pwd)/compare_events_anno.gtex_subset.py $et
+        python $(pwd)/compare_events_anno.gtex.py $et
     else
-        echo "python $(pwd)/compare_events_anno.gtex_subset.py $et" | bsub -M 4000 -J filt -n 1 -W 4:00 -R "rusage[mem=4000]" -R "span[hosts=1]" -o /dev/null
+        echo "python $(pwd)/compare_events_anno.gtex.py $et" | bsub -M 4000 -J filt -n 1 -W 4:00 -R "rusage[mem=4000]" -R "span[hosts=1]" -o /dev/null
     fi
 done
