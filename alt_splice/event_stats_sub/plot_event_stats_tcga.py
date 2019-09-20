@@ -20,7 +20,7 @@ import axes as axs
 sys.path.append('/cluster/home/akahles/git/projects/2013/PanCancerTCGA/rerun2017')
 from utils.paths import paths
 
-PLOTDIR = os.path.join(paths.plotdir, 'stats')
+PLOTDIR = os.path.join(paths.plotdir, 'stats_sub')
 if not os.path.exists(PLOTDIR):
     os.makedirs(PLOTDIR)
 CONF = 2
@@ -28,8 +28,7 @@ CONF = 2
 event_types = ['exon_skip',
                'intron_retention',
                'alt_3prime',
-               'alt_5prime', 
-               'mutex_exons']
+               'alt_5prime']
 
 event_dict = {'exon_skip':'Exon Skip',
               'intron_retention':'Intron Retention',
@@ -42,29 +41,24 @@ event_dict = {'exon_skip':'Exon Skip',
 def main():
     figs = dict()
     gss = dict()
-    gss['stats'] = gridspec.GridSpec(3, 2) #, wspace=0.0, hspace=0.0)
-    gss['stats_log'] = gridspec.GridSpec(3, 2) #, wspace=0.0, hspace=0.0)
+    gss['stats'] = gridspec.GridSpec(2, 2) #, wspace=0.0, hspace=0.0)
+    gss['stats_log'] = gridspec.GridSpec(2, 2) #, wspace=0.0, hspace=0.0)
 
     for e, event_type in enumerate(event_types):
 
         print >> sys.stderr, 'Handling %s' % event_type
         
         ### load annotation index
-        is_anno_gtex = cPickle.load(open(os.path.join(paths.basedir_as_gtex, 'merge_graphs_%s_C%i.anno_only.pickle' % (event_type, CONF)), 'r'))
-        is_anno_icgc = cPickle.load(open(os.path.join(paths.basedir_as, 'merge_graphs_%s_C%i.anno_only.pickle' % (event_type, CONF)), 'r'))
+        is_anno_tcga = cPickle.load(open(os.path.join(paths.basedir_as_sub, 'merge_graphs_%s_C%i.anno_only.pickle' % (event_type, CONF)), 'r'))
 
         ### load confident events
-        IN = h5py.File(os.path.join(paths.basedir_as, 'merge_graphs_%s_C%i.counts.hdf5' % (event_type, CONF)), 'r')
-        idx_conf_tcga = sp.zeros((is_anno_icgc.shape[0],), dtype='bool')
+        IN = h5py.File(os.path.join(paths.basedir_as_sub, 'merge_graphs_%s_C%i.counts.hdf5' % (event_type, CONF)), 'r')
+        idx_conf_tcga = sp.zeros((is_anno_tcga.shape[0],), dtype='bool')
         idx_conf_tcga[IN['conf_idx'][:]] = 1
         IN.close()
 
-        ### for mutex events load cluster idx
-        if event_type == 'mutex_exons':
-            mutex_clusters = cPickle.load(open(os.path.join(paths.basedir_as, 'merge_graphs_%s_C%i.cluster_idx.pickle' % (event_type, CONF)), 'r'))
-
         ### load psi filtered events
-        idx_psi_tcga = cPickle.load(open(os.path.join(paths.basedir_as, 'merge_graphs_%s_C%i.counts.psi_filt_per_ct.pickle' % (event_type, CONF)), 'r'))[1]
+        idx_psi_tcga = cPickle.load(open(os.path.join(paths.basedir_as_sub, 'merge_graphs_%s_C%i.counts.psi_filt_per_ct.pickle' % (event_type, CONF)), 'r'))[1]
 
         ### get all cancer types
         ctypes = sp.unique([x[1] for x in idx_psi_tcga.keys()])
@@ -73,23 +67,8 @@ def main():
         for dp in [0.0, 0.1, 0.3, 0.5]:
             for mr in [5, 20, 50]:
                 ### get counts
-                if  event_type == 'mutex_exons':
-                    counts_anno = []
-                    counts_new = []
-                    for ct in ctypes:
-                        if not (mr, ct, dp) in idx_psi_tcga:
-                            counts_anno.append(0)
-                            counts_new.append(0)
-                            continue
-                        tmp_idx = sp.zeros((is_anno_icgc.shape[0],), dtype='bool')
-                        tmp_idx[idx_psi_tcga[(mr, ct, dp)]] = 1
-                        counts_anno.append(sp.unique(mutex_clusters[idx_conf_tcga & is_anno_icgc & tmp_idx]).shape[0])
-                        counts_new.append(sp.unique(mutex_clusters[idx_conf_tcga & ~is_anno_icgc & tmp_idx]).shape[0])
-                    counts_anno = sp.array(counts_anno)
-                    counts_new = sp.array(counts_new)
-                else:
-                    counts_anno = sp.array([sp.sum((idx_conf_tcga & is_anno_icgc)[idx_psi_tcga[(mr, ct, dp)]]) if (mr, ct, dp) in idx_psi_tcga else 0 for ct in ctypes])
-                    counts_new = sp.array([sp.sum(idx_conf_tcga[idx_psi_tcga[(mr, ct, dp)]]) - sp.sum((idx_conf_tcga & is_anno_icgc)[idx_psi_tcga[(mr, ct, dp)]]) if (mr, ct, dp) in idx_psi_tcga else 0 for ct in ctypes])
+                counts_anno = sp.array([sp.sum(is_anno_tcga[idx_psi_tcga[(mr, ct, dp)]]) if (mr, ct, dp) in idx_psi_tcga else 0 for ct in ctypes])
+                counts_new = sp.array([idx_psi_tcga[(mr, ct, dp)].shape[0] - sp.sum(is_anno_tcga[idx_psi_tcga[(mr, ct, dp)]]) if (mr, ct, dp) in idx_psi_tcga else 0 for ct in ctypes])
 
                 ### plot stats for events by cancer type
                 if e == 0:
