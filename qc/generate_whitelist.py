@@ -2,9 +2,9 @@ import sys
 import os
 import scipy as sp
 
-FASTQC = # fastqc_overview_table
-DEGRADATION =  # degradation scores
-SEQUENCER = # informatio on the sequencer per sample
+FASTQC = # file fastqc_overview_table.pub.tsv.gz available here: https://gdc.cancer.gov/about-data/publications/PanCanAtlas-Splicing-2018
+DEGRADATION =  'degradation_scores.tsv.gz'
+SEQUENCER = 'Sequencer.tsv.gz'
 OUTPUTDIR = # directory for the output to be written to
 
 ### we flag a library as low quality, if at least 3 of the following criteria get a 'fail':
