@@ -38,6 +38,9 @@ Contains code for the visualization of results on the prediction of neo-epitopes
 * **`peptide_generation`**  
 Code concerned with generating peptides from splice-graphs.
 
+* **`qc`**  
+Code and additional resources related to quality control of input data.
+
 * **`sample_processing_rna`**  
 Code for pre-processing and alignment of the RNA-Seq data, including expression counting, the
 collection of usage statistics, and construction of splicing graphs.
